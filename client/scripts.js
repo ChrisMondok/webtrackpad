@@ -10,6 +10,10 @@ function connect() {
 	}
 }
 
+function mouseMoveSupported(){
+	return typeof(document.onmousemove) !== 'undefined' && typeof(document.onmousedown) !== 'undefined';
+}
+
 function handleWith(callback, e) {
 	callback(e);
 	if(event.preventDefault)
@@ -58,6 +62,17 @@ function onConnectionEstablished(socket) {
 
 	trackpad.addEventListener('touchmove', handleWith.bind(this, function(t) {
 		touches = t.targetTouches;
+		if(!mouseMoveSupported()){
+			var t,
+				x = t.touches[0].pageX - last.x,
+				y = t.touches[0].pageY - last.y;
+
+			remote.moveMouse(x,y);
+
+			last.x = t.touches[0].pageX;
+			last.y = t.touches[0].pageY;
+		}
+
 		if(touches.length == 2) {
 			var dist = distance(
 				touches[0].pageX, touches[0].pageY,
