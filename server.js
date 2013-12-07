@@ -91,12 +91,62 @@ if (platform !== "win32") {
     });
 
 } else {
+    var handleMessage = function(connector, message) {
+        var parsed = JSON.parse(message);
+        if (parsed.x || parsed.y) {
+            connector.doMouseMove(parsed.x, parsed.y);
+        }
+        if (parsed.hasOwnProperty('mouseDown')) {
+            connector.doMouseDown(parsed.mouseDown)
+        }
+
+        if (parsed.hasOwnProperty('mouseUp')) {
+            connector.doMouseUp(parsed.mouseUp);
+        }
+
+        if (parsed.hasOwnProperty('keyDown')) {
+            connector.doKeyDown(parsed.keyDown);
+        }
+
+        if (parsed.hasOwnProperty('keyUp')) {
+            connector.doKeyUp(parsed.keyUp);
+        }
+
+        if (parsed.hasOwnProperty('info'))
+            console.log(parsed.info);
+    };
     var control_connector = require('./windows_connector');
     control_connector.initialize()
-    	.then(function(connector){
-    		console.log(connector);
-    },
-    function(){
-    	console.log("Something went wrong");
-    })
+        .then(function(connector) {
+                var app = express();
+
+                var httpServer = http.createServer(app);
+
+                app.use(express["static"](__dirname + '/client'));
+
+                httpServer.listen(9000);
+
+                var wsServer = new ws.Server({
+                    server: httpServer
+                });
+
+                wsServer.on('connection', function(ws) {
+                    console.log("Connected");
+
+                    ws.on('message', function(message) {
+                        handleMessage(connector, message);
+                    });
+
+                    ws.on('error', function(error) {
+                        console.error(error);
+                    });
+
+                    ws.on('close', function(message) {
+                        console.log("Close " + message);
+                    });
+                });
+            },
+            function() {
+                console.log("Something went wrong");
+            });
 }

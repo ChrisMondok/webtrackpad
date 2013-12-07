@@ -4,13 +4,13 @@ module.exports = {
 	initialize: function(){
 		var deferred = q.defer();
 		
-		deferred.resolve("HOORAY PROMISES");
+		deferred.resolve(this);
 
 		return deferred.promise;	
 	},
-	handleMouseMove: function(){ console.log(arguments)},
-	handleMouseDown: function(){ console.log(arguments)},
-	handleMouseUp: function(){ console.log(arguments)},
-	handleKeyDown: function(){ console.log(arguments)},
-	handleKeyUp: function(){ console.log(arguments)}
+	doMouseMove: function(){ console.log(arguments)},
+	doMouseDown: function(){ console.log(arguments)},
+	doMouseUp: function(){ console.log(arguments)},
+	doKeyDown: function(){ console.log(arguments)},
+	doKeyUp: function(){ console.log(arguments)}
 }
