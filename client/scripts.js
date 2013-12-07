@@ -12,11 +12,11 @@ function connect() {
 
 function handleWith(callback, e) {
 	callback(e);
-//	if(event.preventDefault)
-//		event.preventDefault();
-//	if(event.stopPropagation)
-//		event.stopPropagation();
-//	return false;
+	if(event.preventDefault)
+		event.preventDefault();
+	if(event.stopPropagation)
+		event.stopPropagation();
+	return false;
 }
 
 function distance(x1,y1,x2,y2) {
