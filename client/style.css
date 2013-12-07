@@ -13,7 +13,33 @@ body, html {
 	background-color:gray;
 }
 
-button
+section#directional-buttons
+{
+	position:absolute;
+	left:0;
+	top:0;
+	width:50%;
+	height:100%;
+	background-color:aliceblue;
+	text-align:center;
+}
+
+section#directional-buttons > *
+{
+	font-size:1rem;
+	width:8em;
+	height:8em;
+	line-height:8em;
+	vertical-align:middle;
+}
+
+div.button-placeholder
+{
+	display:inline-block;
+	background-color:lime;
+}
+
+.mouse-buttons button
 {
 	position:absolute;
 	bottom:0;
