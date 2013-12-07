@@ -3,7 +3,7 @@ function connect() {
 		alert("Websockets not supported");
 	else
 	{
-		var socket = new WebSocket("ws://spire:9000");
+		var socket = new WebSocket(window.location.href.replace('http://','ws://'));
 		socket.addEventListener('open', onConnectionEstablished.bind(this,socket));
 		socket.addEventListener('error', function(e){alert("Connection error");});
 		socket.addEventListener('close', function(){alert("Connection closed");});
