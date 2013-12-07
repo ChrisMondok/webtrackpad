@@ -1,4 +1,5 @@
 var http = require('http'),
+	express = require('express'),
 	ws = require('ws'),
 	fs = require('fs'),
 	x11 = require('x11');
@@ -23,24 +24,25 @@ x11.createClient(function(error,display) {
 		}
 		if(parsed.hasOwnProperty('mouseDown'))
 		{
+			console.log("Press",parsed.mouseDown);
 			client.require('xtest', function(Test) {
 				Test.FakeInput(Test.ButtonPress, parsed.mouseDown, 0, root, 0, 0);
 			});
 		}
 		if(parsed.hasOwnProperty('mouseUp'))
 		{
+			console.log("Release",parsed.mouseDown);
 			client.require('xtest', function(Test) {
 				Test.FakeInput(Test.ButtonRelease, parsed.mouseUp, 0, root, 0, 0);
 			});
 		}
 	};
 
-	var httpServer = http.createServer(function(req, response) {
-		response.writeHead(200, {'Content-Type': 'text/html'});
-		fs.readFile('client/index.html', function(error, data) {
-			response.end(data);
-		});
-	});
+	var app = express();
+
+	var httpServer = http.createServer(app);
+
+	app.use(express["static"](__dirname + '/client'));
 
 	httpServer.listen(9000);
 

@@ -3,133 +3,13 @@
 		<title>Test</title>
 		<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width, height=device-height">
 		<meta name="format-detection" content="false">
-		<style type="text/css">
-body, html {
-	width:100%;
-	height:100%;
-	margin:0;
-}
-
-#trackpad {
-	position:absolute;
-	left:0;
-	right:0;
-	top:0;
-	bottom:6rem;
-	background-color:gray;
-}
-
-button
-{
-	position:absolute;
-	bottom:0;
-	width:50%;
-	height:6rem;
-	box-sizing:border-box;
-}
-
-button#leftclick
-{
-	left:0;
-}
-
-button#rightclick
-{
-	right:0;
-}
-		</style>
+		<script type="text/javascript" src="remote.js"></script>
+		<script type="text/javascript" src="scripts.js"></script>
+		<link rel="stylesheet" type="text/css" href="style.css"></link>
 	</head>
 	<body>
-		<div id="textdiv">Hang on a second</div>
-		<div id="trackpad"></div>
+		<div id="trackpad" tabindex="0"></div>
 		<button id="leftclick"></button>
 		<button id="rightclick"></button>
-		<script type="text/javascript">
-
-function startListening(socket) {
-	var dragging = false;
-	var start = {x:0, y:0};
-	var last = {x:0, y:0};
-
-	var trackpad = document.getElementById('trackpad'),
-		leftclick = document.getElementById('leftclick'),
-		rightclick = document.getElementById('rightclick');
-
-	trackpad.addEventListener('mousedown', function(m) { dragging = true; start={x:m.x, y:m.y}; last={x:m.x, y:m.y} });
-	trackpad.addEventListener('mouseup', function(m) {
-		dragging = false;
-		if(m.x == start.x && m.y == start.y) {
-			socket.send(JSON.stringify({mouseDown:m.which}))
-			socket.send(JSON.stringify({mouseUp:m.which}))
-		}
-	});
-
-	trackpad.addEventListener('mousemove', function(mouseEvent) {
-		if(dragging) {
-			var x = mouseEvent.x - last.x,
-				y = mouseEvent.y - last.y;
-			socket.send(JSON.stringify({x:x, y:y}));
-
-			last.x = mouseEvent.x;
-			last.y = mouseEvent.y;
-		}
-
-	});
-
-	trackpad.addEventListener('keyup', function(keyboardEvent) {
-		socket.send(JSON.stringify({keyup:keyboardEvent.key, keyCodeUp:keyboardEvent.keyCode}));
-		keyboardEvent.preventDefault();
-	});
-
-	trackpad.addEventListener('keydown', function(keyboardEvent) {
-		socket.send(JSON.stringify({down:keyboardEvent.key, keyCodeDown:keyboardEvent.keyCode}));
-		keyboardEvent.preventDefault();
-	});
-
-	leftclick.addEventListener('mousedown', function(click) {
-		socket.send(JSON.stringify({mouseDown:1}));
-		event.preventDefault();
-		event.stopPropagation();
-		return false;
-	});
-	leftclick.addEventListener('mouseup', function(click) {
-		socket.send(JSON.stringify({mouseUp:1}));
-		event.preventDefault();
-		event.stopPropagation()
-		return false;
-	});
-	rightclick.addEventListener('mousedown', function(click) {
-		socket.send(JSON.stringify({mouseDown:3}));
-		event.preventDefault();
-		event.stopPropagation();
-		return false;
-	});
-	rightclick.addEventListener('mouseup', function(click) {
-		socket.send(JSON.stringify({mouseUp:3}));
-		event.preventDefault();
-		event.stopPropagation()
-		return false;
-	});
-
-	trackpad.addEventListener('contextmenu', function(cm) {
-		event.preventDefault();
-	});
-
-	document.getElementById('textdiv').innerHTML = "";
-}
-
-if ((typeof WebSocket) == "undefined")
-	alert("Websockets not supported");
-else
-{
-	var socket = new WebSocket("ws://spire:9000");
-	socket.addEventListener('open', startListening.bind(this,socket));
-	socket.addEventListener('error', function(e){document.getElementById('textdiv').innerHTML = "Error"});
-	socket.addEventListener('close', function(){document.getElementById('textdiv').innerHTML = "Closed"});
-}
-
-if(window.PalmSystem)
-	PalmSystem.stageReady();
-		</script>
 	</body>
 </html>

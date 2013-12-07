@@ -1,0 +1,33 @@
+body, html {
+	width:100%;
+	height:100%;
+	margin:0;
+}
+
+#trackpad {
+	position:absolute;
+	left:0;
+	right:0;
+	top:0;
+	bottom:6rem;
+	background-color:gray;
+}
+
+button
+{
+	position:absolute;
+	bottom:0;
+	width:50%;
+	height:6rem;
+	box-sizing:border-box;
+}
+
+button#leftclick
+{
+	left:0;
+}
+
+button#rightclick
+{
+	right:0;
+}
