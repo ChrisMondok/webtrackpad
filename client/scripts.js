@@ -25,12 +25,24 @@ function distance(x1,y1,x2,y2) {
 	);
 }
 
+function getCenter(touches) {
+	var x = 0; y = 0;
+
+	for(var i = 0; i < touches.length; i++) {
+		x += touches[i].pageX;
+		y += touches[i].pageY;
+	}
+
+	return {x:x,y:y};
+}
+
 function onConnectionEstablished(socket) {
 	var dragging = false;
 	var start = {x:0, y:0};
 	var last = {x:0, y:0};
 	var touches = [];
 	var lastDistance = 0;
+	var center = null;
 
 	var remote = new Remote(socket);
 
@@ -52,10 +64,8 @@ function onConnectionEstablished(socket) {
 				touches[1].pageX, touches[1].pageY
 			);
 
-			if(lastDistance)
-			{
-				if(Math.abs(lastDistance - dist) > 20)
-				{
+			if(lastDistance) {
+				if(Math.abs(lastDistance - dist) > 20) {
 					remote.pressKey(17);
 					var button = (dist > lastDistance ? 4 : 5)
 					remote.pressButton(button);
@@ -67,11 +77,31 @@ function onConnectionEstablished(socket) {
 			else
 				lastDistance = dist;
 		}
+		if(touches.length == 3) {
+			var c = getCenter(touches);
+			if(center) {
+				if(Math.abs(c.x - center.x) > 50) {
+					var button = c.x > center.x ? 6 : 7;
+					remote.pressButton(button);
+					remote.releaseButton(button);
+					center.x = c.x;
+				}
+				if(Math.abs(c.y - center.y) > 50) {
+					var button = c.y > center.y ? 4 : 5;
+					remote.pressButton(button);
+					remote.releaseButton(button);
+					center.y = c.y;
+				}
+			}
+			else
+				center = c;
+		}
 	}));
 
 	trackpad.addEventListener('touchend', handleWith.bind(this, function(t) {
 		touches = [];
 		lastDistance = 0;
+		center = null;
 	}));
 
 	trackpad.addEventListener('mouseup', handleWith.bind(this,function(m) {
