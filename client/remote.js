@@ -18,6 +18,10 @@ Remote.prototype.releaseButton = function(button) {
 	this.send({mouseUp:button});
 };
 
-Remote.prototype.pressKey = function(key, keycode) {
-	this.send({keyUp:keyboardEvent.key, keyCodeUp:keyboardEvent.keyCode});
+Remote.prototype.pressKey = function(keyCode) {
+	this.send({keyDown:keyCode});
+};
+
+Remote.prototype.releaseKey = function(keyCode) {
+	this.send({keyUp:keyCode});
 };

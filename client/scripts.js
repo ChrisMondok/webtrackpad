@@ -12,17 +12,25 @@ function connect() {
 
 function handleWith(callback, e) {
 	callback(e);
-	if(event.preventDefault)
-		event.preventDefault();
-	if(event.stopPropagation)
-		event.stopPropagation();
-	return false;
+//	if(event.preventDefault)
+//		event.preventDefault();
+//	if(event.stopPropagation)
+//		event.stopPropagation();
+//	return false;
+}
+
+function distance(x1,y1,x2,y2) {
+	return Math.sqrt(
+		Math.pow(x2 - x1,2) + Math.pow(y2 - y1,2)
+	);
 }
 
 function onConnectionEstablished(socket) {
 	var dragging = false;
 	var start = {x:0, y:0};
 	var last = {x:0, y:0};
+	var touches = [];
+	var lastDistance = 0;
 
 	var remote = new Remote(socket);
 
@@ -36,6 +44,36 @@ function onConnectionEstablished(socket) {
 		last={x:m.x, y:m.y};
 	}));
 
+	trackpad.addEventListener('touchmove', handleWith.bind(this, function(t) {
+		touches = t.targetTouches;
+		if(touches.length == 2) {
+			var dist = distance(
+				touches[0].pageX, touches[0].pageY,
+				touches[1].pageX, touches[1].pageY
+			);
+
+			if(lastDistance)
+			{
+				if(Math.abs(lastDistance - dist) > 20)
+				{
+					remote.pressKey(17);
+					var button = (dist > lastDistance ? 4 : 5)
+					remote.pressButton(button);
+					remote.releaseButton(button);
+					remote.releaseKey(17);
+					lastDistance = dist;
+				}
+			}
+			else
+				lastDistance = dist;
+		}
+	}));
+
+	trackpad.addEventListener('touchend', handleWith.bind(this, function(t) {
+		touches = [];
+		lastDistance = 0;
+	}));
+
 	trackpad.addEventListener('mouseup', handleWith.bind(this,function(m) {
 		dragging = false;
 
@@ -46,7 +84,7 @@ function onConnectionEstablished(socket) {
 	}));
 
 	trackpad.addEventListener('mousemove', handleWith.bind(this,function(mouseEvent) {
-		if(dragging) {
+		if(dragging & touches.length < 2) {
 			var x = mouseEvent.x - last.x,
 				y = mouseEvent.y - last.y;
 
@@ -58,11 +96,11 @@ function onConnectionEstablished(socket) {
 	}));
 
 	trackpad.addEventListener('keydown', handleWith.bind(this,function(keyboardEvent) {
-		remote.pressKey({keyDown:keyboardEvent.key, keyCodeDown:keyboardEvent.keyCode});
+		remote.pressKey(keyboardEvent.keyCode);
 	}));
 
 	trackpad.addEventListener('keyup', handleWith.bind(this,function(keyboardEvent) {
-		remote.releaseKey({keyUp:keyboardEvent.key, keyCodeUp:keyboardEvent.keyCode});
+		remote.releaseKey(keyboardEvent.keyCode);
 	}));
 
 	trackpad.addEventListener('mousewheel', handleWith.bind(this,function(wheelEvent){
@@ -95,6 +133,8 @@ function onConnectionEstablished(socket) {
 	trackpad.addEventListener('contextmenu', function(cm) {
 		event.preventDefault();
 	});
+
+	trackpad.focus();
 }
 
 window.addEventListener('load', connect);

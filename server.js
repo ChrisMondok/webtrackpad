@@ -4,6 +4,10 @@ var http = require('http'),
 	fs = require('fs'),
 	x11 = require('x11');
 
+var keyMap = [];
+keyMap[17] = 37 //control;
+
+
 x11.createClient(function(error,display) {
 
 	if(error) throw error;
@@ -22,20 +26,38 @@ x11.createClient(function(error,display) {
 				client.WarpPointer(0,root,0,0,0,0,x,y);
 			});
 		}
-		if(parsed.hasOwnProperty('mouseDown'))
-		{
-			console.log("Press",parsed.mouseDown);
+		if(parsed.hasOwnProperty('mouseDown')) {
 			client.require('xtest', function(Test) {
 				Test.FakeInput(Test.ButtonPress, parsed.mouseDown, 0, root, 0, 0);
 			});
 		}
-		if(parsed.hasOwnProperty('mouseUp'))
-		{
-			console.log("Release",parsed.mouseDown);
+
+		if(parsed.hasOwnProperty('mouseUp')) {
 			client.require('xtest', function(Test) {
 				Test.FakeInput(Test.ButtonRelease, parsed.mouseUp, 0, root, 0, 0);
 			});
 		}
+
+		if(parsed.hasOwnProperty('keyDown')) {
+			client.require('xtest', function(Test) {
+				var key = keyMap[parsed.keyDown];
+				if(key)
+					Test.FakeInput(Test.KeyPress, key, 0, root, 0, 0);
+			});
+		}
+
+		if(parsed.hasOwnProperty('keyUp')) {
+			client.require('xtest', function(Test) {
+				var key = keyMap[parsed.keyUp];
+				if(key)
+					Test.FakeInput(Test.KeyRelease, key, 0, root, 0, 0);
+				else
+					console.log("Couldn't find "+key);
+			});
+		}
+
+		if(parsed.hasOwnProperty('info'))
+			console.log(parsed.info);
 	};
 
 	var app = express();
