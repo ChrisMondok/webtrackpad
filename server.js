@@ -91,5 +91,12 @@ if (platform !== "win32") {
     });
 
 } else {
-    console.log("Windows version here");
+    var control_connector = require('./windows_connector');
+    control_connector.initialize()
+    	.then(function(connector){
+    		console.log(connector);
+    },
+    function(){
+    	console.log("Something went wrong");
+    })
 }
