@@ -1,0 +1,11 @@
+{
+	"id":"com.chrismondok.remote",
+	"version":"0.0.1",
+	"vendor":"Chris Mondok",
+	"type":"web",
+	"main":"index.html",
+	"title":"Remote Control",
+	"uiRevision":2,
+	"noDeprecatedStyles": true,
+	"theme": "light"
+}
