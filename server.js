@@ -93,6 +93,7 @@ if (platform !== "win32") {
 } else {
     var handleMessage = function(connector, message) {
         var parsed = JSON.parse(message);
+        console.log(parsed);
         if (parsed.x || parsed.y) {
             connector.doMouseMove(parsed.x, parsed.y);
         }
@@ -147,6 +148,6 @@ if (platform !== "win32") {
                 });
             },
             function() {
-                console.log("Something went wrong");
+                console.log("Something went wrong.");
             });
 }
