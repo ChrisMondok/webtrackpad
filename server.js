@@ -1,7 +1,6 @@
 var http = require('http'),
 	express = require('express'),
 	ws = require('ws'),
-	fs = require('fs'),
 	x11 = require('x11');
 
 var keyMap = [];
